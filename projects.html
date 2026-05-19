@@ -674,9 +674,147 @@ footer span {
 .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
+
+/* ─── Scroll progress bar ─── */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--purple), var(--pink), var(--cyan));
+  z-index: 200;
+  box-shadow: 0 0 10px rgba(236,72,153,0.6);
+  transition: width 0.1s linear;
+}
+
+/* ─── Sparkles ─── */
+.sparkle {
+  position: fixed;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  animation: sparkleFloat 6s ease-in-out infinite;
+}
+@keyframes sparkleFloat {
+  0%   { opacity: 0; transform: translateY(0) scale(0); }
+  25%  { opacity: 0.9; transform: translateY(-20px) scale(1); }
+  50%  { opacity: 0.6; transform: translateY(-40px) scale(1.2); }
+  75%  { opacity: 0.3; transform: translateY(-60px) scale(0.8); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0); }
+}
+.sparkle:nth-child(odd)  { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.sparkle:nth-child(3n)   { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+.sparkle:nth-child(5n)   { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+/* ─── Animated gradient border on project cards ─── */
+.project-card { position: relative; }
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s, background 0.4s;
+  pointer-events: none;
+}
+.project-card:hover::before {
+  background: linear-gradient(135deg, var(--purple), var(--pink), var(--cyan));
+  opacity: 1;
+}
+
+/* ─── Tilt support ─── */
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.3s, border-color 0.3s;
+  will-change: transform;
+}
+.tilt-inner { transform: translateZ(20px); }
+
+/* ─── Animated heading underline shimmer ─── */
+.page-header h1, .hero h1 {
+  position: relative;
+  display: inline-block;
+}
+
+/* ─── Section heading shimmer line ─── */
+h2::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin-top: 0.6rem;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--purple), var(--pink), var(--cyan), var(--purple));
+  background-size: 300% 100%;
+  animation: shimmer 4s linear infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* ─── Typewriter caret ─── */
+.typewriter-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--pink);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: caretBlink 1s steps(2) infinite;
+}
+@keyframes caretBlink {
+  50% { opacity: 0; }
+}
+
+/* ─── Button ripple sheen ─── */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transition: left 0.5s;
+}
+.btn-primary:hover::after { left: 100%; }
+
+/* ─── Chip shimmer on hover ─── */
+.chip {
+  position: relative;
+  overflow: hidden;
+}
+.chip::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s;
+}
+.chip:hover::after { left: 100%; }
+
 </style>
 </head>
 <body>
+<div class="scroll-progress"></div>
+<div class="sparkle" style="left:8%; top:80%; animation-delay:0s"></div>
+<div class="sparkle" style="left:22%; top:45%; animation-delay:1.2s"></div>
+<div class="sparkle" style="left:38%; top:70%; animation-delay:2.4s"></div>
+<div class="sparkle" style="left:55%; top:30%; animation-delay:3.6s"></div>
+<div class="sparkle" style="left:72%; top:65%; animation-delay:1.8s"></div>
+<div class="sparkle" style="left:88%; top:40%; animation-delay:4.2s"></div>
+<div class="sparkle" style="left:15%; top:20%; animation-delay:2.0s"></div>
+<div class="sparkle" style="left:48%; top:90%; animation-delay:0.6s"></div>
+<div class="sparkle" style="left:65%; top:12%; animation-delay:3.0s"></div>
+<div class="sparkle" style="left:92%; top:75%; animation-delay:2.8s"></div>
 
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
@@ -706,7 +844,7 @@ footer span {
   <section>
     <div class="projects-grid">
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(108,99,255,0.12)">🤖</div>
         <h3>AI-Powered Prompt Test Automation Tool</h3>
         <p>Built an internal tool at HeyGen where users type natural language test steps and the system autonomously executes browser actions — clicks, scrolls, inputs — using Playwright and AI-driven page analysis. Enabled non-engineers to create and run automation workflows without writing a single line of code.</p>
@@ -718,7 +856,7 @@ footer span {
         </div>
       </div>
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(56,189,248,0.1)">🏠</div>
         <h3>Find My PG</h3>
         <p>A platform for discovering and managing paying-guest accommodations — solving a real problem in the rental housing market. Find-my-pg.com brings together listings, search filters, and management tools to connect PG seekers with verified owners.</p>
@@ -729,7 +867,7 @@ footer span {
         </div>
       </div>
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(52,211,153,0.1)">🦷</div>
         <h3>SkillDent Website</h3>
         <p>Designed and built a professional website for a dental clinic and training institute in Jayanagar, Bangalore. The site covers clinical services, educational programs, appointment flows, and course offerings — serving both patients and aspiring dental professionals.</p>
@@ -740,7 +878,7 @@ footer span {
         </div>
       </div>
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(251,191,36,0.1)">🎓</div>
         <h3>Rotaract Club MCE — Digital Presence</h3>
         <p>Led the digital strategy and built the official website for Rotaract Club of MCE and its flagship events — Reflections (school children showcase, Hassan's largest school event), Tussle &amp; Hussle (engineering mock placement + fun games), and Spartshartha (inclusivity day for differently-abled youth).</p>
@@ -751,7 +889,7 @@ footer span {
         </div>
       </div>
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(239,68,68,0.1)">🧪</div>
         <h3>HeyGen QA Infrastructure</h3>
         <p>Architected the full QA ecosystem at HeyGen from scratch — end-to-end Playwright suites, CI/CD integration via CircleCI, BrowserStack cross-browser coverage, Datadog production monitoring, API test automation in Python, and a migration to Shiplight for AI-first prompt-based testing. Zero to complete coverage.</p>
@@ -763,7 +901,7 @@ footer span {
         </div>
       </div>
 
-      <div class="project-card glass fade-in">
+      <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(168,139,250,0.12)">🌱</div>
         <h3>Automated Irrigation &amp; Nutrition System</h3>
         <p>Pitched at Shark Tank 2.0 (ME-RISE Hassan) — a smart farming solution that automates plant irrigation and nutrient delivery. The project drew strong panel response with multiple investors expressing willingness to fund further development.</p>
