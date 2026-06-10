@@ -1065,33 +1065,29 @@ h2::after {
       <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(6,182,212,0.12)">🔍</div>
         <h3>RAG Document QA System</h3>
-        <p>
-          Built a full Retrieval-Augmented Generation pipeline — chunked documents, embedded them using Sentence-Transformers, stored in a FAISS vector index, and retrieved context for LLM-based question answering.
-          Evaluated retrieval quality using MRR and hit-rate@k; compared dense retrieval against BM25 sparse retrieval to analyze trade-offs in semantic vs. keyword-based search.
-        </p>
+        <p>Built a production-style Retrieval-Augmented Generation pipeline from scratch. Documents are chunked with overlapping windows, embedded using Sentence-Transformers, and stored in a FAISS vector index for fast nearest-neighbour retrieval. At query time the top-k chunks are injected as context into an LLM to generate grounded, citation-aware answers — eliminating hallucinations on domain-specific content. Evaluated retrieval quality end-to-end using MRR and hit-rate@k, and benchmarked dense semantic retrieval against BM25 sparse retrieval to surface real trade-offs between keyword and meaning-based search.</p>
         <div class="project-footer">
           <span class="tag">Python</span>
           <span class="tag">LangChain</span>
           <span class="tag">FAISS</span>
           <span class="tag">Sentence-Transformers</span>
           <span class="tag">RAG</span>
+          <span class="tag">BM25</span>
         </div>
       </div>
 
       <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(236,72,153,0.12)">🛡️</div>
         <h3>Hate Speech Detection</h3>
-        <p>
-          Fine-tuned a multilingual BERT (mBERT) model on a labeled benchmark dataset to classify text as hate speech, offensive, or neutral — achieving <strong style="color:var(--text)">87%+ macro F1</strong> on the test split.
-          Handled class imbalance via weighted loss; applied SHAP-based explainability to analyze which tokens most influenced model predictions.
-        </p>
+        <p>Fine-tuned a multilingual BERT (mBERT) model on a labelled benchmark dataset covering three classes — hate speech, offensive, and neutral — across multiple languages. Tackled real-world class imbalance by tuning per-class weights in the cross-entropy loss rather than resampling, preserving data distribution while penalising rare-class errors. Reached <strong style="color:var(--text)">87%+ macro F1</strong> on the held-out test split. Applied SHAP token-level attribution to understand which words and phrases most influenced each prediction, making the model interpretable and audit-ready for real deployment.</p>
         <div class="project-footer">
           <span class="tag">Python</span>
           <span class="tag">HuggingFace</span>
-          <span class="tag">BERT</span>
+          <span class="tag">mBERT</span>
           <span class="tag">PyTorch</span>
           <span class="tag">NLP</span>
           <span class="tag">SHAP</span>
+          <span class="tag">Explainability</span>
         </div>
       </div>
 
@@ -1099,12 +1095,12 @@ h2::after {
         <div class="project-wip-badge">🚧 In Progress</div>
         <div class="project-icon" style="background:rgba(245,158,11,0.12)">💰</div>
         <h3>ToolBill</h3>
-        <p>
-          A smart billing and tool management platform currently under development — designed to streamline how businesses track, manage, and bill for tool usage. Building with modern web technologies and an AI-assisted workflow.
-        </p>
+        <p>A smart billing and subscription management platform built to solve the real pain of tracking and managing multiple SaaS tools across a team or business. ToolBill centralises tool costs, usage, renewal dates, and owner assignments in one dashboard — surfacing unused subscriptions, flagging upcoming renewals, and generating billing reports automatically. Currently under active development with an AI-assisted workflow using Claude and Cursor for rapid iteration.</p>
         <div class="project-footer">
           <span class="tag">In Development</span>
           <span class="tag">Web App</span>
+          <span class="tag">SaaS</span>
+          <span class="tag">Billing</span>
           <span class="tag">AI-assisted</span>
         </div>
       </div>
