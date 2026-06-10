@@ -1,0 +1,69 @@
+backend:
+  name: github
+  repo: kiran-1505/kiranbk
+  branch: main
+  commit_messages:
+    create: 'Blog: create "{{slug}}"'
+    update: 'Blog: update "{{slug}}"'
+    delete: 'Blog: delete "{{slug}}"'
+    uploadMedia: 'Blog: upload {{path}}'
+    deleteMedia: 'Blog: delete {{path}}'
+
+media_folder: "media"
+public_folder: "media"
+
+site_url: https://kiran-1505.github.io/kiranbk/
+display_url: https://kiran-1505.github.io/kiranbk/
+logo_url: https://kiran-1505.github.io/kiranbk/profile.jpg
+
+collections:
+  - name: "blog"
+    label: "Blog"
+    files:
+      - file: "posts.json"
+        name: "posts"
+        label: "Blog Posts"
+        format: "json"
+        editor:
+          preview: false
+        fields:
+          - label: "Posts (newest first)"
+            name: "posts"
+            widget: "list"
+            collapsed: false
+            summary: "{{fields.title}} — {{fields.date}}"
+            fields:
+              - label: "Date"
+                name: "date"
+                widget: "datetime"
+                format: "YYYY-MM-DD"
+                date_format: "YYYY-MM-DD"
+                time_format: false
+                default: ""
+                hint: "Date of the post (controls sort order)."
+              - label: "Title"
+                name: "title"
+                widget: "string"
+                required: false
+                hint: "Optional. Headline of the post."
+              - label: "Body"
+                name: "body"
+                widget: "text"
+                hint: "What you want to share. Use two new lines for paragraph break."
+              - label: "Media (images & videos)"
+                name: "media"
+                widget: "list"
+                required: false
+                collapsed: false
+                summary: "{{fields.url}}"
+                fields:
+                  - label: "File"
+                    name: "url"
+                    widget: "file"
+                    media_library:
+                      config:
+                        multiple: false
+                  - label: "Alt text"
+                    name: "alt"
+                    widget: "string"
+                    required: false
