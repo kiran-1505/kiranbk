@@ -2,6 +2,8 @@ backend:
   name: github
   repo: kiran-1505/kiranbk
   branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
   commit_messages:
     create: 'Blog: create "{{slug}}"'
     update: 'Blog: update "{{slug}}"'
