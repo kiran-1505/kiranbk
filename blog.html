@@ -805,8 +805,96 @@ h2::after {
 .blog-feed {
   display: grid;
   gap: 1.5rem;
-  max-width: 700px;
+  max-width: 720px;
   margin: 0 auto;
+}
+
+/* ─── Hashnode cards ─── */
+.hn-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  backdrop-filter: blur(14px);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.hn-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #06b6d4);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.hn-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(236,72,153,0.4);
+  box-shadow: 0 16px 50px rgba(139,92,246,0.18);
+}
+.hn-card:hover::after { opacity: 1; }
+.hn-cover {
+  background: linear-gradient(135deg, rgba(139,92,246,0.18), rgba(236,72,153,0.18), rgba(6,182,212,0.15));
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hn-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s;
+}
+.hn-card:hover .hn-cover img { transform: scale(1.04); }
+.hn-cover-fallback {
+  font-size: 4rem;
+  filter: drop-shadow(0 6px 18px rgba(139,92,246,0.5));
+}
+.hn-body { padding: 1.5rem 1.75rem; }
+.hn-meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 0.6rem;
+}
+.hn-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 0.55rem;
+  background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hn-brief {
+  color: var(--muted);
+  font-size: 0.93rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+.hn-cta {
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.01em;
+}
+.blog-footer-note {
+  text-align: center;
+  margin-top: 2.5rem;
 }
 .blog-empty {
   text-align: center;
@@ -1004,6 +1092,9 @@ h2::after {
     <div id="feed" class="blog-feed">
       <div class="blog-empty">Loading posts…</div>
     </div>
+    <div class="blog-footer-note">
+      <a href="https://kiranbk.hashnode.dev" target="_blank" rel="noopener" class="btn btn-outline">View all posts on Hashnode →</a>
+    </div>
   </section>
 </main>
 
@@ -1012,13 +1103,11 @@ h2::after {
 </footer>
 
 <script>
+const HASHNODE_HOST = 'kiranbk.hashnode.dev';
 const feed = document.getElementById('feed');
 
 function escapeHtml(s) {
   return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function paragraphs(text) {
-  return escapeHtml(text || '').split(/\n\n+/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
 }
 function formatDate(iso) {
   if (!iso) return '';
@@ -1026,50 +1115,72 @@ function formatDate(iso) {
   if (isNaN(d)) return iso;
   return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 }
-function isVideo(m) {
-  if (m.type && m.type.startsWith('video')) return true;
-  return /\.(mp4|webm|mov|m4v)$/i.test(m.url || '');
-}
-function renderMedia(media) {
-  if (!media || !media.length) return '';
-  const cls = media.length === 1 ? 'blog-media single' : 'blog-media';
-  return `<div class="${cls}">${media.map(m => {
-    if (isVideo(m)) return `<video src="${m.url}" controls preload="metadata" playsinline></video>`;
-    return `<img src="${m.url}" alt="${escapeHtml(m.alt||'')}" loading="lazy" />`;
-  }).join('')}</div>`;
-}
+
+const QUERY = `
+  query Publication($host: String!) {
+    publication(host: $host) {
+      title
+      posts(first: 20) {
+        edges {
+          node {
+            title
+            brief
+            slug
+            publishedAt
+            readTimeInMinutes
+            url
+            coverImage { url }
+          }
+        }
+      }
+    }
+  }
+`;
 
 async function loadPosts() {
   try {
-    const res = await fetch('posts.json?ts=' + Date.now());
-    if (!res.ok) throw new Error('posts.json not found (status ' + res.status + ')');
-    const data = await res.json();
-    const posts = (data.posts || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const res = await fetch('https://gql.hashnode.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: QUERY, variables: { host: HASHNODE_HOST } })
+    });
+    if (!res.ok) throw new Error('Hashnode API ' + res.status);
+    const json = await res.json();
+    if (json.errors) throw new Error(json.errors[0].message);
+
+    const pub = json.data && json.data.publication;
+    if (!pub) throw new Error('Publication not found: ' + HASHNODE_HOST);
+
+    const posts = (pub.posts.edges || []).map(e => e.node);
     if (!posts.length) {
-      feed.innerHTML = '<div class="blog-empty">No posts yet — check back soon!</div>';
+      feed.innerHTML = '<div class="blog-empty">No posts yet — <a href="https://hashnode.com/draft" target="_blank" rel="noopener" style="color:var(--pink);">write your first one</a> on Hashnode!</div>';
       return;
     }
+
     feed.innerHTML = '';
     posts.forEach(p => {
-      const post = document.createElement('article');
-      post.className = 'blog-post';
-      post.innerHTML = `
-        <div class="blog-post-head">
-          <div class="blog-avatar"><img src="profile.jpg" alt="Kiran B K" /></div>
-          <div class="blog-meta">
-            <strong>Kiran B K</strong>
-            <span>${formatDate(p.date)}</span>
+      const card = document.createElement('a');
+      card.className = 'hn-card';
+      card.href = p.url;
+      card.target = '_blank';
+      card.rel = 'noopener';
+      card.innerHTML = `
+        ${p.coverImage && p.coverImage.url ? `<div class="hn-cover"><img src="${p.coverImage.url}" alt="" loading="lazy" /></div>` : '<div class="hn-cover hn-cover-fallback">📝</div>'}
+        <div class="hn-body">
+          <div class="hn-meta">
+            <span class="hn-date">${formatDate(p.publishedAt)}</span>
+            ${p.readTimeInMinutes ? `<span class="hn-read">· ${p.readTimeInMinutes} min read</span>` : ''}
           </div>
+          <h2 class="hn-title">${escapeHtml(p.title)}</h2>
+          ${p.brief ? `<p class="hn-brief">${escapeHtml(p.brief)}</p>` : ''}
+          <div class="hn-cta">Read on Hashnode →</div>
         </div>
-        ${p.title ? `<h2 class="blog-title">${escapeHtml(p.title)}</h2>` : ''}
-        ${p.body ? `<div class="blog-body">${paragraphs(p.body)}</div>` : ''}
-        ${renderMedia(p.media)}
       `;
-      feed.appendChild(post);
+      feed.appendChild(card);
     });
   } catch (e) {
     console.error(e);
-    feed.innerHTML = `<div class="blog-empty">Could not load posts.<br><small>${escapeHtml(e.message)}</small></div>`;
+    feed.innerHTML = `<div class="blog-empty">Could not load posts from Hashnode.<br><small>${escapeHtml(e.message)}</small></div>`;
   }
 }
 loadPosts();
