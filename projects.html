@@ -810,6 +810,19 @@ footer span {
 
 /* ─── Animated gradient border on project cards ─── */
 .project-card { position: relative; }
+.project-wip-badge {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(236,72,153,0.2));
+  border: 1px solid rgba(245,158,11,0.4);
+  color: #fcd34d;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+}
 .project-card::before {
   content: '';
   position: absolute;
@@ -1046,6 +1059,53 @@ h2::after {
           <span class="tag">IoT</span>
           <span class="tag">Agri-tech</span>
           <span class="tag">Hardware</span>
+        </div>
+      </div>
+
+      <div class="project-card glass fade-in tilt">
+        <div class="project-icon" style="background:rgba(6,182,212,0.12)">🔍</div>
+        <h3>RAG Document QA System</h3>
+        <p>
+          Built a full Retrieval-Augmented Generation pipeline — chunked documents, embedded them using Sentence-Transformers, stored in a FAISS vector index, and retrieved context for LLM-based question answering.
+          Evaluated retrieval quality using MRR and hit-rate@k; compared dense retrieval against BM25 sparse retrieval to analyze trade-offs in semantic vs. keyword-based search.
+        </p>
+        <div class="project-footer">
+          <span class="tag">Python</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">FAISS</span>
+          <span class="tag">Sentence-Transformers</span>
+          <span class="tag">RAG</span>
+        </div>
+      </div>
+
+      <div class="project-card glass fade-in tilt">
+        <div class="project-icon" style="background:rgba(236,72,153,0.12)">🛡️</div>
+        <h3>Hate Speech Detection</h3>
+        <p>
+          Fine-tuned a multilingual BERT (mBERT) model on a labeled benchmark dataset to classify text as hate speech, offensive, or neutral — achieving <strong style="color:var(--text)">87%+ macro F1</strong> on the test split.
+          Handled class imbalance via weighted loss; applied SHAP-based explainability to analyze which tokens most influenced model predictions.
+        </p>
+        <div class="project-footer">
+          <span class="tag">Python</span>
+          <span class="tag">HuggingFace</span>
+          <span class="tag">BERT</span>
+          <span class="tag">PyTorch</span>
+          <span class="tag">NLP</span>
+          <span class="tag">SHAP</span>
+        </div>
+      </div>
+
+      <div class="project-card glass fade-in tilt" style="position:relative;">
+        <div class="project-wip-badge">🚧 In Progress</div>
+        <div class="project-icon" style="background:rgba(245,158,11,0.12)">💰</div>
+        <h3>ToolBill</h3>
+        <p>
+          A smart billing and tool management platform currently under development — designed to streamline how businesses track, manage, and bill for tool usage. Building with modern web technologies and an AI-assisted workflow.
+        </p>
+        <div class="project-footer">
+          <span class="tag">In Development</span>
+          <span class="tag">Web App</span>
+          <span class="tag">AI-assisted</span>
         </div>
       </div>
 
