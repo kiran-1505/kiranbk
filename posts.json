@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "date": "2026-05-19",
+      "title": "🚀 Just shipped an AI-powered Tic-Tac-Toe at the AWS × DFKI Workshop!",
+      "brief": "Built a next-gen Tic-Tac-Toe with hand gesture recognition, voice commands, and click input — using Kiro (AWS's AI tool) with MCP & spec-driven development. Earned 3rd place by majority vote! 🏆",
+      "url": "https://kiranbk.hashnode.dev",
+      "cover": "",
+      "readTime": 3
+    }
+  ]
+}

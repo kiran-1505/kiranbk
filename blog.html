@@ -1103,12 +1103,10 @@ h2::after {
 </footer>
 
 <script>
-const RSS_URL = 'https://kiranbk.hashnode.dev/rss.xml';
-const API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL) + '&count=20';
 const feed = document.getElementById('feed');
 
 function escapeHtml(s) {
-  return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function formatDate(str) {
   if (!str) return '';
@@ -1116,53 +1114,45 @@ function formatDate(str) {
   if (isNaN(d)) return str;
   return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 }
-function stripHtml(html) {
-  return (html || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
-}
-function brief(html, max=160) {
-  const text = stripHtml(html);
-  return text.length > max ? text.slice(0, max).replace(/\s+\S*$/, '') + '…' : text;
-}
 
 async function loadPosts() {
   try {
-    const res = await fetch(API);
-    if (!res.ok) throw new Error('RSS fetch failed: ' + res.status);
+    const res = await fetch('posts.json?v=' + Date.now());
+    if (!res.ok) throw new Error('posts.json not found');
     const data = await res.json();
-    if (data.status !== 'ok') throw new Error(data.message || 'RSS error');
+    const posts = (data.posts || []).sort((a,b) => (b.date||'').localeCompare(a.date||''));
 
-    const posts = data.items || [];
     if (!posts.length) {
-      feed.innerHTML = '<div class="blog-empty">No posts yet — <a href="https://kiranbk.hashnode.dev" target="_blank" rel="noopener" style="color:var(--pink);">write your first one on Hashnode!</a></div>';
+      feed.innerHTML = '<div class="blog-empty">No posts yet — check back soon!</div>';
       return;
     }
 
     feed.innerHTML = '';
     posts.forEach(p => {
-      const thumb = p.thumbnail || (p.enclosure && p.enclosure.link) || '';
       const card = document.createElement('a');
       card.className = 'hn-card';
-      card.href = p.link;
+      card.href = p.url;
       card.target = '_blank';
       card.rel = 'noopener';
       card.innerHTML = `
-        ${thumb
-          ? `<div class="hn-cover"><img src="${escapeHtml(thumb)}" alt="" loading="lazy" /></div>`
+        ${p.cover
+          ? `<div class="hn-cover"><img src="${escapeHtml(p.cover)}" alt="" loading="lazy" /></div>`
           : '<div class="hn-cover hn-cover-fallback">📝</div>'}
         <div class="hn-body">
           <div class="hn-meta">
-            <span class="hn-date">${formatDate(p.pubDate)}</span>
+            <span class="hn-date">${formatDate(p.date)}</span>
+            ${p.readTime ? `<span class="hn-read">· ${p.readTime} min read</span>` : ''}
           </div>
           <h2 class="hn-title">${escapeHtml(p.title)}</h2>
-          <p class="hn-brief">${escapeHtml(brief(p.description))}</p>
+          ${p.brief ? `<p class="hn-brief">${escapeHtml(p.brief)}</p>` : ''}
           <div class="hn-cta">Read on Hashnode →</div>
         </div>
       `;
       feed.appendChild(card);
     });
-  } catch (e) {
+  } catch(e) {
     console.error(e);
-    feed.innerHTML = `<div class="blog-empty">Could not load posts.<br><small>${escapeHtml(e.message)}</small><br><br><a href="https://kiranbk.hashnode.dev" target="_blank" rel="noopener" class="btn btn-outline" style="display:inline-flex;">Read on Hashnode →</a></div>`;
+    feed.innerHTML = `<div class="blog-empty">Could not load posts.<br><small>${escapeHtml(e.message)}</small></div>`;
   }
 }
 loadPosts();
