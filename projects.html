@@ -1065,21 +1065,20 @@ h2::after {
       <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(6,182,212,0.12)">🔍</div>
         <h3>RAG Document QA System</h3>
-        <p>Built a production-style Retrieval-Augmented Generation pipeline from scratch. Documents are chunked with overlapping windows, embedded using Sentence-Transformers, and stored in a FAISS vector index for fast nearest-neighbour retrieval. At query time the top-k chunks are injected as context into an LLM to generate grounded, citation-aware answers — eliminating hallucinations on domain-specific content. Evaluated retrieval quality end-to-end using MRR and hit-rate@k, and benchmarked dense semantic retrieval against BM25 sparse retrieval to surface real trade-offs between keyword and meaning-based search.</p>
+        <p>Built an end-to-end Retrieval-Augmented Generation pipeline — chunked documents with overlapping windows, embedded using Sentence-Transformers, and stored in a FAISS vector index. Retrieved top-k chunks as LLM context for grounded, hallucination-free QA. Evaluated using MRR and hit-rate@k; benchmarked dense retrieval vs. BM25 to compare semantic and keyword-based search.</p>
         <div class="project-footer">
           <span class="tag">Python</span>
           <span class="tag">LangChain</span>
           <span class="tag">FAISS</span>
           <span class="tag">Sentence-Transformers</span>
           <span class="tag">RAG</span>
-          <span class="tag">BM25</span>
         </div>
       </div>
 
       <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(236,72,153,0.12)">🛡️</div>
         <h3>Hate Speech Detection</h3>
-        <p>Fine-tuned a multilingual BERT (mBERT) model on a labelled benchmark dataset covering three classes — hate speech, offensive, and neutral — across multiple languages. Tackled real-world class imbalance by tuning per-class weights in the cross-entropy loss rather than resampling, preserving data distribution while penalising rare-class errors. Reached <strong style="color:var(--text)">87%+ macro F1</strong> on the held-out test split. Applied SHAP token-level attribution to understand which words and phrases most influenced each prediction, making the model interpretable and audit-ready for real deployment.</p>
+        <p>Fine-tuned multilingual BERT (mBERT) to classify text as hate speech, offensive, or neutral — achieving <strong style="color:var(--text)">87%+ macro F1</strong>. Handled class imbalance via weighted loss and applied SHAP token-level attribution to make model predictions interpretable and audit-ready.</p>
         <div class="project-footer">
           <span class="tag">Python</span>
           <span class="tag">HuggingFace</span>
@@ -1087,20 +1086,18 @@ h2::after {
           <span class="tag">PyTorch</span>
           <span class="tag">NLP</span>
           <span class="tag">SHAP</span>
-          <span class="tag">Explainability</span>
         </div>
       </div>
 
       <div class="project-card glass fade-in tilt">
         <div class="project-icon" style="background:rgba(245,158,11,0.12)">💰</div>
         <h3>ToolBill</h3>
-        <p>A fully-shipped offline-first PWA built for an auto tools shop — handles the complete retail workflow from product management to billing to inventory. Products get auto-generated codes (e.g. <code style="font-family:monospace;font-size:0.8em;color:#fcd34d;">HT-0042</code>) with printable QR + Code-128 labels (A4 sheet of 30). The billing screen supports USB barcode scanner, typed short codes, fuzzy name search, and inline quantity/price editing — all with live stock deduction. Ships with inventory tracking, GRN stock-receive, daily sales reports, CSV export, and a full backup/restore system. Installable on any laptop or tablet via the browser — works completely offline after first install using a Service Worker with auto-update banners on redeploy.</p>
+        <p>Offline-first PWA for an auto tools shop — covers billing, inventory, and label printing end-to-end. Supports USB barcode scanner, fuzzy search, inline cart editing, and auto stock deduction. Installable on any laptop or tablet; works fully offline via Service Worker with auto-update banners on each deploy.</p>
         <div class="project-footer">
           <span class="tag">PWA</span>
           <span class="tag">JavaScript</span>
           <span class="tag">IndexedDB</span>
           <span class="tag">Offline-first</span>
-          <span class="tag">Tailwind CSS</span>
           <span class="tag">Barcode / QR</span>
           <span class="tag">Shipped ✓</span>
         </div>
