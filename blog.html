@@ -1103,76 +1103,58 @@ h2::after {
 </footer>
 
 <script>
-const HASHNODE_HOST = 'kiranbk.hashnode.dev';
+const RSS_URL = 'https://kiranbk.hashnode.dev/rss.xml';
+const API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL) + '&count=20';
 const feed = document.getElementById('feed');
 
 function escapeHtml(s) {
   return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
+function formatDate(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  if (isNaN(d)) return str;
   return d.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
 }
-
-const QUERY = `
-  query Publication($host: String!) {
-    publication(host: $host) {
-      title
-      posts(first: 20) {
-        edges {
-          node {
-            title
-            brief
-            slug
-            publishedAt
-            readTimeInMinutes
-            url
-            coverImage { url }
-          }
-        }
-      }
-    }
-  }
-`;
+function stripHtml(html) {
+  return (html || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+}
+function brief(html, max=160) {
+  const text = stripHtml(html);
+  return text.length > max ? text.slice(0, max).replace(/\s+\S*$/, '') + '…' : text;
+}
 
 async function loadPosts() {
   try {
-    const res = await fetch('https://gql.hashnode.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: QUERY, variables: { host: HASHNODE_HOST } })
-    });
-    if (!res.ok) throw new Error('Hashnode API ' + res.status);
-    const json = await res.json();
-    if (json.errors) throw new Error(json.errors[0].message);
+    const res = await fetch(API);
+    if (!res.ok) throw new Error('RSS fetch failed: ' + res.status);
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(data.message || 'RSS error');
 
-    const pub = json.data && json.data.publication;
-    if (!pub) throw new Error('Publication not found: ' + HASHNODE_HOST);
-
-    const posts = (pub.posts.edges || []).map(e => e.node);
+    const posts = data.items || [];
     if (!posts.length) {
-      feed.innerHTML = '<div class="blog-empty">No posts yet — <a href="https://hashnode.com/draft" target="_blank" rel="noopener" style="color:var(--pink);">write your first one</a> on Hashnode!</div>';
+      feed.innerHTML = '<div class="blog-empty">No posts yet — <a href="https://kiranbk.hashnode.dev" target="_blank" rel="noopener" style="color:var(--pink);">write your first one on Hashnode!</a></div>';
       return;
     }
 
     feed.innerHTML = '';
     posts.forEach(p => {
+      const thumb = p.thumbnail || (p.enclosure && p.enclosure.link) || '';
       const card = document.createElement('a');
       card.className = 'hn-card';
-      card.href = p.url;
+      card.href = p.link;
       card.target = '_blank';
       card.rel = 'noopener';
       card.innerHTML = `
-        ${p.coverImage && p.coverImage.url ? `<div class="hn-cover"><img src="${p.coverImage.url}" alt="" loading="lazy" /></div>` : '<div class="hn-cover hn-cover-fallback">📝</div>'}
+        ${thumb
+          ? `<div class="hn-cover"><img src="${escapeHtml(thumb)}" alt="" loading="lazy" /></div>`
+          : '<div class="hn-cover hn-cover-fallback">📝</div>'}
         <div class="hn-body">
           <div class="hn-meta">
-            <span class="hn-date">${formatDate(p.publishedAt)}</span>
-            ${p.readTimeInMinutes ? `<span class="hn-read">· ${p.readTimeInMinutes} min read</span>` : ''}
+            <span class="hn-date">${formatDate(p.pubDate)}</span>
           </div>
           <h2 class="hn-title">${escapeHtml(p.title)}</h2>
-          ${p.brief ? `<p class="hn-brief">${escapeHtml(p.brief)}</p>` : ''}
+          <p class="hn-brief">${escapeHtml(brief(p.description))}</p>
           <div class="hn-cta">Read on Hashnode →</div>
         </div>
       `;
@@ -1180,7 +1162,7 @@ async function loadPosts() {
     });
   } catch (e) {
     console.error(e);
-    feed.innerHTML = `<div class="blog-empty">Could not load posts from Hashnode.<br><small>${escapeHtml(e.message)}</small></div>`;
+    feed.innerHTML = `<div class="blog-empty">Could not load posts.<br><small>${escapeHtml(e.message)}</small><br><br><a href="https://kiranbk.hashnode.dev" target="_blank" rel="noopener" class="btn btn-outline" style="display:inline-flex;">Read on Hashnode →</a></div>`;
   }
 }
 loadPosts();
